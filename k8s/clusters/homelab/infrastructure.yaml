@@ -1,7 +1,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cert-manager-config
+  name: infrastructure
   namespace: flux-system
 spec:
   interval: 5m
@@ -10,10 +10,8 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/cert-manager-config
+  path: ./k8s/infrastructure
   prune: true
-  dependsOn:
-    - name: infrastructure
   decryption:
     provider: sops
     secretRef:
