@@ -1,0 +1,11 @@
+*
+!.gitignore
+!agent/
+agent/*
+!agent/settings.json
+!agent/extensions/
+agent/extensions/*
+!agent/extensions/**
+!agent/themes/
+agent/themes/*
+!agent/themes/**
