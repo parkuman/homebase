@@ -1,0 +1,12 @@
+[user]
+  name = Parker Rowe
+	email = parker.rowe@circleci.com
+	signingkey = 1011F7DFBC4DE92F
+
+[core]
+  preloadindex = true
+  compression = 9
+  whitespace = error
+
+[commit]
+	gpgsign = true
