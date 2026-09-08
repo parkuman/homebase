@@ -16,8 +16,12 @@
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  
+  # Add ZFS support.
+  boot.supportedFilesystems = ["zfs"];
 
   networking.hostName = "nas";
+  networking.hostId = "3f1b15aa"; # required by ZFS. is just a random 8 char string. without this, "ZFS requires networking.hostId to be set" will be raised
 
   # Configure network connections interactively with nmcli or nmtui.
   networking.networkmanager.enable = true;
@@ -39,8 +43,9 @@
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
 
-
-
+  # ZFS services
+  services.zfs.autoSnapshot.enable = true;
+  services.zfs.autoScrub.enable = true; # Regular scrubbing of ZFS pools is recommended. Defaults to once a week: https://wiki.nixos.org/wiki/ZFS
 
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";

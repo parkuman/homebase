@@ -6,6 +6,11 @@
     # nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs.url = "nixpkgs/nixos-unstable";
 
+    disko = {
+      url = "github:nix-community/disko/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       # url = "github:nix-community/home-manager/release-25.11";
       url = "github:nix-community/home-manager/master";
@@ -23,6 +28,7 @@
     {
       self,
       nixpkgs,
+      disko,
       home-manager,
       nix-darwin,
       ...
@@ -45,6 +51,8 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/nixos/nas/configuration.nix
+            ./hosts/nixos/nas/disko.nix
+            disko.nixosModules.disko
           ];
         };
         parker-desktop = nixpkgs.lib.nixosSystem {
