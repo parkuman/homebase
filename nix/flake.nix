@@ -41,6 +41,12 @@
         };
       };
       nixosConfigurations = {
+        nas = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/nixos/nas/configuration.nix
+          ];
+        };
         parker-desktop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit user; };
