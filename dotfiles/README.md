@@ -29,10 +29,25 @@ Fetch the private key, then:
 gpg --import private-key.asc
 ```
 
-### NixOS
+### NixOS PC
 
 ```bash
 sudo nixos-rebuild switch --flake ~/homebase/nix#parker-desktop
+```
+
+### NixOS NAS
+
+On the machine:
+
+```bash
+sudo nixos-rebuild switch --flake /srv/homebase/nix#nas
+```
+
+From another PC:
+
+```bash
+nix shell nixpkgs#nixos-rebuild
+nixos-rebuild switch --flake ~/homebase/nix#parker-nas --target-host root@192.168.40.59 --build-host root@192.168.40.59
 ```
 
 ### MacOS
