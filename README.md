@@ -1,40 +1,56 @@
-# HomeLab
+# Homebase
 
-This repository contains all of the code and documentation for my homelab.
-
-I started this project in January, 2025. It currently runs on a used Acer Chromebox CXI4 I picked up off of Facebook Marketplace.
+This repo hosts all of the code that I use to manage my servers at home and config for my different computers. It is a WIP declarative way to manage all my things.
 
 ## Goals
 
-- use this as a way to learn about dev ops, self-hosting, networking
+- use this as a way to learn about dev ops, self-hosting, networking, Nix
 - observability via Grafana
-- everything is managed via Gitops
+- Ideally everything is managed declaratively via nix/GitOps
 - self host apps I use every day
-- my website
-- [AnyType](https://anytype.io/) - for note taking
-- [Jellyfin](https://jellyfin.org/) - media streaming
-- PiHole / AdGuard or similar
+- my website ?
+- AdGuard or similar
 - Home Assistant
+- Be able to access this on the go
 
 ## Setup
+
+### Zimaboard2 NAS
+
+Primary storage and core infrastructure. This is the mission critical stuff that I want to be running all the time.
+
+- Intel N150
+- 16GB RAM
+- 6TB Hard drive
+- NixOS
+
+### Acer Chromebox CXI4
+
+This is the mess-around and have fun with VMs and try out kubernetes machine.
+
+i5-10210U
+
+32GB RAM
 
 - Proxmox
   - virtualize the one server i have into multiple machines to simulate a K3S cluster
   - some apps might be better suited as a VM (home assistant) - proxmox helps with this
-- K3S Cluster
-  - 2 debian nodes
-    - 1 control plane node
-    - 1 worker node (for now, plan to extend this via more VMs or more physical servers later if needed)
+  - Home Assistant OS VM
+  - K3S Cluster
+    - 2 debian nodes
+      - 1 control plane node
+      - 1 worker node (for now, plan to extend this via more VMs or more physical servers later if needed)
 
 ## Sops
 
 Using [`sops`](https://github.com/getsops/sops) for secret management.
 
 ```bash
+cd k8s
 sops -e -i apps/<blah>/secret.yaml
 ```
 
-## Repo structure
+## `k8s/` Repo structure
 
 The current repo structure is close to the one outlined in the [Flux Documentation](https://fluxcd.io/flux/guides/repository-structure/), but more suited to a simple homelab setup.
 
@@ -42,9 +58,9 @@ The current repo structure is close to the one outlined in the [Flux Documentati
 
 ### TODO
 
-- [ ] merge this repo with `.dotfiles`
-- [ ] install nix on NAS
-- [ ] get ssh working on NAS
+- [x] merge this repo with `.dotfiles`
+- [x] install nix on NAS
+- [x] get ssh working on NAS
 - [ ] get ZFS working
 - [ ] get samba working
 - [ ] set up users for samba / unix so jill and i have one
@@ -54,12 +70,10 @@ The current repo structure is close to the one outlined in the [Flux Documentati
 - [ ] install immich
 - [ ] immich cloudflare tunnel for sharing
 
-...
-
 ### Hardware
 
 - **Chromebox** — i5-10210U, 32 GB RAM. Currently runs Proxmox + K3s. Home Assistant as a VM.
-- **Zimaboard 2 "NAS"** — 8 GB RAM, 6 TB HDD (data), 500 GB SSD (boot). Primary storage and core infrastructure.
+- **Zimaboard 2 "NAS"** — 16 GB RAM, 6 TB HDD (data), 500 GB SSD (boot). Primary storage and core infrastructure.
 - **Zimaboard 2 "Play"** — 8 GB RAM. Sandbox for experiments and game servers.
 
 ---
@@ -141,11 +155,9 @@ Fully disposable. Nothing depends on it.
 - Could become a second K3s node or dedicated runner host later
 - Node exporter for monitoring
 
----
-
 ### Networking & DNS
 
-#### How DNS works
+#### How I want DNS to work
 
 - AdGuard Home runs on the NAS as a NixOS service
 - Router DHCP hands out the NAS IP as the DNS server for all LAN devices.
@@ -189,15 +201,11 @@ services.adguardhome = {
 - From outside: phone/laptop → Tailscale → NAS resolves `*.home.prowe.ca` → routes to correct machine → Caddy/Traefik terminates TLS.
 - Same URLs work on LAN and remotely.
 
----
-
 ### Immich Sharing (for friends)
 
 - Immich has built-in shared links: create an album, generate a link, toggle "allow uploads," optionally set a password.
 - Friends open the link in a browser. no account needed, no Tailscale needed.
 - Public access via Cloudflare Tunnel at `photos.prowe.ca`. Outbound-only connection, no ports opened.
-
----
 
 ### Buddy Backup with Dad's QNAP
 
@@ -220,8 +228,6 @@ services.adguardhome = {
 
 - Dad backs up his QNAP to my NAS. I share your NAS device with his tailnet.
 
----
-
 ### Management
 
 #### Day-to-day monitoring
@@ -233,69 +239,25 @@ services.adguardhome = {
 #### Config changes
 
 - All infrastructure declared in one git repo (Nix flake + K8s manifests).
-- Push a commit → SSH into NAS → `nixos-rebuild switch --flake .#nas`.
-- For other machines: `nixos-rebuild switch --flake .#play --target-host play.home.prowe.ca` from the NAS.
+- Push a commit `nixos-rebuild switch --flake .#nas` (automatically?)
 - Or set up a Forgejo webhook to auto-rebuild on push.
 - Have some way to auto-rollback if some checks fail.
-
-#### Management from phone
-
-- Tailscale SSH + terminal app on phone.
-- Pi mobile app or self-hosted Pi dashboard (`pi.home.prowe.ca`) connects over Tailscale.
-
----
-
-### Repo Structure
-
-One monorepo, combined with my `.dotfiles` repo.
-
-```
-infra/
-├── flake.nix
-├── flake.lock
-├── hosts/
-│   ├── nas/          # NixOS config: AdGuard, Caddy, Immich, Jellyfin, Forgejo, Samba, ZFS, cloudflared, Pi agent
-│   ├── chromebox/    # NixOS host config: Home Assistant VM, K3s service, node-exporter
-│   ├── play/         # NixOS config: game servers, experiments
-│   └── */            # Other personal machine(s)
-├── modules/
-│   ├── common.nix    # Tailscale, users, SSH, base packages
-│   ├── caddy.nix     # Reverse proxy module
-│   ├── monitoring.nix# Node exporter, promtail
-│   └── ...
-├── home/             # home-manager configs (dotfiles, shell, editor)
-└── k8s/              # Flux GitOps manifests (Mealie, Grafana, etc.)
-    ├── apps/
-    ├── infrastructure/
-    └── monitoring/
-```
-
-- Flux points at the `k8s/` subdirectory.
-- Deploy NixOS changes: `colmena apply` or something like `deploy-rs` pushes to all machines, with automatic rollback if a host doesn't come back.
-- Dotfiles are home-manager configs. no separate repo.
-
----
 
 ### Homepage
 
 - A dashboard linking to all services (Homarr or Homepage).
 
----
-
 ### Future / Later
 
-- **Router stuff** — eventually replace ISP router with something you control (OPNsense, etc.).
+- **Router stuff** — eventually replace ISP router (OPNsense, etc.).
 - **Second drive for NAS**
-- **Forgejo webhook → auto-rebuild** — push to main triggers `nixos-rebuild` on affected hosts.
+- **Forgejo webhook -> auto-rebuild**. push to main triggers `nixos-rebuild` on affected hosts.
 - **Oracle Cloud VM** Cloudflare Tunnel replaces its "public endpoint" role. Could decommission or find a new use for it. Or just keep it running jellyfin
-
----
 
 ### Key Principles
 
-- **NAS is the foundation** — DNS, storage, photos, media. If it's up, the home network works.
-- **Chromebox is non-critical** — K3s playground, Home Assistant, monitoring. If this machine goes down I can still access my files and movies. Home automations and fun little apps stop working but the critical ones stay up.
+- **NAS is the foundation**. DNS, storage, photos, media. If it's up, the home network works.
+- **Chromebox is non-critical**. K3s playground, Home Assistant, monitoring. If this machine goes down I can still access my files and movies. Home automations and fun little apps stop working but the critical ones stay up.
 - **Play box is disposable**. Break things freely so long as nobody is gaming on it or something.
 - **Single disk = no redundancy** buddy backup with dad is not optional
 - **Everything is code** Nix flake for machines, Flux for K8s, DNS rewrites in Nix, no UI clicking required.
-- **One repo** all infrastructure in one place. one `git log` shows everything.
