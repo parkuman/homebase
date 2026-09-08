@@ -10,7 +10,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./infrastructure/cert-manager-config
+  path: ./k8s/infrastructure/cert-manager-config
   prune: true
   dependsOn:
     - name: infrastructure

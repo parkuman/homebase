@@ -10,7 +10,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./monitoring
+  path: ./k8s/monitoring
   prune: true
   decryption:
     provider: sops
