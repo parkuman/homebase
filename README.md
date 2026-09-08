@@ -84,6 +84,8 @@ The current repo structure is close to the one outlined in the [Flux Documentati
 
 The foundation. If this is up, the home network works.
 
+This repo is cloned on the machine for easy building at `/srv`.
+
 **Core infrastructure:**
 
 - AdGuard Home. DNS + ad-blocking for the entire network.
