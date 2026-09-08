@@ -13,8 +13,8 @@ requirements:
 then use stow to symlink the files
 
 ```bash
-cd ~/.dotfiles/
-stow .
+cd ~/homebase/
+stow -t ~ dotfiles
 ```
 
 ## Nix
@@ -32,7 +32,7 @@ gpg --import private-key.asc
 ### NixOS
 
 ```bash
-sudo nixos-rebuild switch --flake ~/.dotfiles/nix#parker-desktop
+sudo nixos-rebuild switch --flake ~/homebase/nix#parker-desktop
 ```
 
 ### MacOS
