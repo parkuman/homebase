@@ -49,6 +49,7 @@
       nixosConfigurations = {
         nas = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
+          specialArgs = { inherit user; };
           modules = [
             ./hosts/nixos/nas/configuration.nix
             ./hosts/nixos/nas/disko.nix

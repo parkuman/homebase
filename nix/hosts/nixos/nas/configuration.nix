@@ -71,6 +71,18 @@
   # services.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.groups.family = {};
+
+  users.users.${user.username} = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "family" ];
+  };
+
+  users.users.jill = {
+    isNormalUser = true;
+    extraGroups = [ "family" ];
+  };
+
   # users.users.alice = {
   #   isNormalUser = true;
   #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
