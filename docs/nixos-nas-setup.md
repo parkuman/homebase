@@ -65,6 +65,16 @@ WARNING: This will destroy all data on the disks defined in disko.devices, which
 Are you sure you want to wipe the devices listed above? yes
 ```
 
+#### renaming zfs datasets
+
+I wanted to rename a dataset from `shared` to `drive`. Since disko is more like a one-time setup thing, i had to run
+
+```
+sudo zfs rename data/shared data/drive
+```
+
+Then update the references in `disko.nix` (in case of a full refresh), and in `configuration.nix`.
+
 ### adding new users
 
 - created a family group, then added users

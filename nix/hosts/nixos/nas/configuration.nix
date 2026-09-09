@@ -31,7 +31,7 @@
 
   # if these zfs pools don't exist, don't block boot
   fileSystems."/tank/media".options = [ "nofail" ];
-  fileSystems."/tank/shared".options = [ "nofail" ];
+  fileSystems."/tank/drive".options = [ "nofail" ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -131,6 +131,16 @@
         "read only" = "no";
         "create mask" = "0664";      # cap new files at rw-rw-r--, no execute bit needed for data
         "directory mask" = "2775";   # rwxrwxr-x + setgid so new subfolders inherit the family group
+      };
+      drive = {
+        path = "/tank/drive";
+        browseable = "yes";
+        "valid users" = "@family";
+        "force group" = "family";
+        "guest ok" = "no";
+        "read only" = "no";
+        "create mask" = "0664";
+        "directory mask" = "2775";
       };
     };
   };

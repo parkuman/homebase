@@ -32,6 +32,7 @@
         };
 
         datasets = {
+          # movies,tv,music
           media = {
             type = "zfs_fs";
             mountpoint = "/tank/media";
@@ -41,9 +42,10 @@
             };
           };
 
-          shared = {
+          # file backups and such
+          drive = {
             type = "zfs_fs";
-            mountpoint = "/tank/shared";
+            mountpoint = "/tank/drive";
             options = {
               mountpoint = "legacy";
             };
