@@ -75,9 +75,26 @@ sudo zfs rename data/shared data/drive
 
 Then update the references in `disko.nix` (in case of a full refresh), and in `configuration.nix`.
 
+#### Changing ownership of zfs datasets
+
+I then ran into an issue where i couldn't make new directories via finder in the share. It was due to the fact that
+disko made these shares as root. Needed to add some postcreate hook to change the ownership to the family group.
+
+To update this declaratively (kind of) I then ran:
+
+```bash
+sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode mount --root-mountpoint / --flake /srv/homebase/nix#nas
+```
+
 ### adding new users
 
 - created a family group, then added users
 - for each new user, add them to `configuration.nix`
 - then rebuild switch
 - `passwd <name>`
+
+### samba
+
+- added smb shares into `configuration.nix`
+- `systemctl status samba-smbd` to check how its doin
+- `sudo smbpasswd -a <user>` to set samba (different from unix) password
