@@ -98,3 +98,7 @@ sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-commu
 - added smb shares into `configuration.nix`
 - `systemctl status samba-smbd` to check how its doin
 - `sudo smbpasswd -a <user>` to set samba (different from unix) password
+
+#### windows quirk
+
+- windows tries to authenticate with samba using the same username and password as windows. if it happens to work, it connects.
