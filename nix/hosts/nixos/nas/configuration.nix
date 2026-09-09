@@ -151,6 +151,13 @@
     openFirewall = true;
   };
 
+  services.avahi = {
+    enable = true;
+    publish.enable = true;
+    publish.userServices = true; # Needed to allow samba to automatically register mDNS records
+    openFirewall = true;
+  };
+
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
