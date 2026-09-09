@@ -38,3 +38,28 @@ The hardware for the NAS at the time of writing is a 16GB Zimaboard2
 
     sudo nixos-generate-config --root /mnt
     ```
+
+- set up disko for the 6TB hard drive:
+  - zfs not supported on linux kernel 7.x. had to pin it to `boot.kernelPackages = pkgs.linuxPackages_6_18;`
+  - ran into an issue where I rebuild switched with a new kernel (6.x that should support zfs), then rebooted the machine. Issue was I hadn't run disko yet so zfs tried to mount
+    the tanks that weren't there, which then caused the system to not boot and ssh was lost.
+    - added this to allow the system to still boot so i could then run disko
+
+      ```nix
+      fileSystems."/tank/media".options = [ "nofail" ];
+      fileSystems."/tank/shared".options = [ "nofail" ];
+      ```
+
+  - 6TB had no partitions and no data on it i cared about - wipe it:
+
+  ```bash
+  nix run github:nix-community/disko/latest -- --mode disko --flake /srv/homebase/nix#nas
+
+  WARNING: This will destroy all data on the disks defined in disko.devices, which are:
+
+    - /dev/disk/by-id/ata-WDC_WD60EFRX-68MYMN1_WD-WX21D84R1S8Y
+
+      (If you want to skip this dialogue, pass --yes-wipe-all-disks)
+
+  Are you sure you want to wipe the devices listed above? yes
+  ```
