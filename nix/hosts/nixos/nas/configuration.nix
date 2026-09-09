@@ -115,6 +115,10 @@
   services.openssh.settings.PermitRootLogin = "no";
 
   services.samba = {
+    package = pkgs.samba4Full;
+    # ^^ `samba4Full` is compiled with avahi, ldap, AD etc support (compared to the default package, `samba`
+    # Required for samba to register mDNS records for auto discovery 
+    # See https://github.com/NixOS/nixpkgs/blob/592047fc9e4f7b74a4dc85d1b9f5243dfe4899e3/pkgs/top-level/all-packages.nix#L27268
     enable = true;
     openFirewall = true; # opens 139/445 tcp + 137/138 udp automatically
     settings = {
@@ -156,7 +160,6 @@
     publish.enable = true;
     publish.userServices = true; # Needed to allow samba to automatically register mDNS records
     openFirewall = true;
-    nssmdns4 = true;
   };
 
   # Open ports in the firewall.
