@@ -14,8 +14,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Use latest LTS kernel since ZFS is known to support.
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
   
   # Add ZFS support.
   boot.supportedFilesystems = ["zfs"];
