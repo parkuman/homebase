@@ -121,6 +121,7 @@
     # See https://github.com/NixOS/nixpkgs/blob/592047fc9e4f7b74a4dc85d1b9f5243dfe4899e3/pkgs/top-level/all-packages.nix#L27268
     enable = true;
     openFirewall = true; # opens 139/445 tcp + 137/138 udp automatically
+    nmbd.enable = false; # disable NetBIOS since it is old and we are using new shit.
     settings = {
       # reference that is helpful: https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
       global = {
