@@ -145,6 +145,11 @@
     };
   };
 
+  # web service discovery daemon - this allows windows file explorer find samba servers on LAN since SMB1 (and thus netbios) support was discontinued
+  services.samba-wsdd = {
+    enable = true;
+    openFirewall = true;
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
