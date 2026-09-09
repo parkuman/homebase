@@ -19,6 +19,7 @@
   
   # Add ZFS support.
   boot.supportedFilesystems = ["zfs"];
+  boot.zfs.forceImportRoot = false; # nix suggests this is explicitly set to false
 
   networking.hostName = "nas";
   networking.hostId = "3f1b15aa"; # required by ZFS. is just a random 8 char string. without this, "ZFS requires networking.hostId to be set" will be raised
