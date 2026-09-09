@@ -40,6 +40,11 @@
               mountpoint = "legacy";
               recordsize = "1M"; # large sequential files
             };
+            # rather than having root be the owner of the dataset, make it belong to family group
+            postMountHook = ''
+              chown root:family "$mountpoint"
+              chmod 2775 "$mountpoint"
+            '';
           };
 
           # file backups and such
@@ -49,6 +54,11 @@
             options = {
               mountpoint = "legacy";
             };
+            # rather than having root be the owner of the dataset, make it belong to family group
+            postMountHook = ''
+              chown root:family "$mountpoint"
+              chmod 2775 "$mountpoint"
+            '';
           };
         };
       };
