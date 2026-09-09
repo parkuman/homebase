@@ -29,6 +29,10 @@
 
   time.timeZone = "America/Toronto";
 
+  # if these zfs pools don't exist, don't block boot
+  fileSystems."/tank/media".options = [ "nofail" ];
+  fileSystems."/tank/shared".options = [ "nofail" ];
+
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
