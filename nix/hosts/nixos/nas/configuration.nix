@@ -156,6 +156,7 @@
     publish.enable = true;
     publish.userServices = true; # Needed to allow samba to automatically register mDNS records
     openFirewall = true;
+    nssmdns4 = true;
   };
 
   # Open ports in the firewall.
