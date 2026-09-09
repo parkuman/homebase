@@ -116,7 +116,7 @@
 
   services.samba = {
     enable = true;
-    # TODO: will enable. openFirewall = true; # opens 139/445 tcp + 137/138 udp automatically
+    openFirewall = true; # opens 139/445 tcp + 137/138 udp automatically
     settings = {
       # reference that is helpful: https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
       global = {
