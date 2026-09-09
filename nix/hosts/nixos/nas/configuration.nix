@@ -114,6 +114,28 @@
   services.openssh.enable = true;
   services.openssh.settings.PermitRootLogin = "no";
 
+  services.samba = {
+    enable = true;
+    # TODO: will enable. openFirewall = true; # opens 139/445 tcp + 137/138 udp automatically
+    settings = {
+      # reference that is helpful: https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
+      global = {
+        security = "user"; # auth against local unix accounts
+      };
+      media = {
+        path = "/tank/media";
+        browseable = "yes"; # when someone connects to \\nas\ (Windows) or smb://nas/ (Mac Finder) and looks at the list of available folders, this share shows up in that list
+        "valid users" = "@family";
+        "force group" = "family";
+        "guest ok" = "no";
+        "read only" = "no";
+        "create mask" = "0664";      # cap new files at rw-rw-r--, no execute bit needed for data
+        "directory mask" = "2775";   # rwxrwxr-x + setgid so new subfolders inherit the family group
+      };
+    };
+  };
+
+
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
