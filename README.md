@@ -61,9 +61,9 @@ The current repo structure is close to the one outlined in the [Flux Documentati
 - [x] merge this repo with `.dotfiles`
 - [x] install nix on NAS
 - [x] get ssh working on NAS
-- [ ] get ZFS working
-- [ ] get samba working
-- [ ] set up users for samba / unix so jill and i have one
+- [x] get ZFS working
+- [x] get samba working
+- [x] set up users for samba / unix so jill and i have one
 - [ ] get DNS working .. ?
 - [ ] get it working over tailscale
 - [ ] buddy backup
