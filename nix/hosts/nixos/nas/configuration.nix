@@ -114,6 +114,11 @@
   services.openssh.enable = true;
   services.openssh.settings.PermitRootLogin = "no";
 
+  # Tailscale
+  # TODO: switch to declarative auth key via authKeyFile + agenix/sops-nix instead of interactive `tailscale up`.
+  services.tailscale.enable = true;
+  networking.firewall.trustedInterfaces = [ "tailscale0" ]; # makes sure ssh and samba traffic are not blocked (among other things)
+
   services.samba = {
     package = pkgs.samba4Full;
     # ^^ `samba4Full` is compiled with avahi, ldap, AD etc support (compared to the default package, `samba`
