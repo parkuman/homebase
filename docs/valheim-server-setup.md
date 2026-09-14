@@ -207,3 +207,19 @@ EOF
 - **RAM:** 2–4 GB typical for a small group (6 GB allocation gives headroom)
 - **CPU:** light — Valheim server is not CPU-intensive
 - **Network:** negligible (<100 Kbps even with 10 players)
+
+## To update the server version
+
+```bash
+systemctl stop valheim
+
+su - steam -c 'steamcmd +@sSteamCmdForcePlatformType linux \
+  +force_install_dir /home/steam/valheim \
+  +login anonymous \
+  +app_update 896660 validate \
+  +quit'
+
+systemctl start valheim
+journalctl -u valheim -f
+
+```
