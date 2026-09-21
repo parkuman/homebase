@@ -6,7 +6,7 @@
 }:
 
 let
-  dotfiles_config = "${config.home.homeDirectory}/.dotfiles/.config";
+  dotfiles_config = "${config.home.homeDirectory}/homebase/dotfiles/.config";
   create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
   configs = {
     nvim = "nvim";
@@ -67,12 +67,12 @@ in
     enableCompletion = true;
     initContent = /* bash */ ''
       # this is a weird hack so I can still use my zshrc on other machines but also on nix
-      source "${config.home.homeDirectory}/.dotfiles/.zshrc"
+      source "${config.home.homeDirectory}/homebase/dotfiles/.zshrc"
     '';
   };
   programs.starship = {
     enable = true;
-    settings = pkgs.lib.importTOML ../../../../.config/starship.toml;
+    settings = pkgs.lib.importTOML ../../../../dotfiles/.config/starship.toml;
   };
   programs.zoxide.enable = true;
 
