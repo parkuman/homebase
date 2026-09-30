@@ -154,7 +154,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/playit
+ExecStart=/usr/bin/playitd
 Restart=on-failure
 RestartSec=5
 
