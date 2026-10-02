@@ -22,6 +22,11 @@
       url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ragenix = {
+      url = "github:yaxitech/ragenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -31,6 +36,7 @@
       disko,
       home-manager,
       nix-darwin,
+      ragenix,
       ...
     }:
     let
@@ -54,6 +60,7 @@
             ./hosts/nixos/nas/configuration.nix
             ./hosts/nixos/nas/disko.nix
             disko.nixosModules.disko
+            ragenix.nixosModules.default
           ];
         };
         parker-desktop = nixpkgs.lib.nixosSystem {
