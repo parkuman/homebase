@@ -9,6 +9,8 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../../modules/shared/unfree.nix
+    ../../../modules/services/sabnzbd
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -87,15 +89,13 @@
     "amdgpu.dpm=1"
   ];
 
-  nixpkgs.config.allowUnfreePredicate =
-    pkg:
-    builtins.elem (lib.getName pkg) [
-      "discord"
-      "obsidian"
-      "proton-pass-cli"
-      "steam"
-      "steam-unwrapped"
-    ];
+  unfreePackages = [
+    "discord"
+    "obsidian"
+    "proton-pass-cli"
+    "steam"
+    "steam-unwrapped"
+  ];
 
   environment.systemPackages =
     with pkgs;

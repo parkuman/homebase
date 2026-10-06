@@ -47,6 +47,9 @@ in
 
       # audio
       easyeffects
+
+      proton-vpn
+      qbittorrent
     ];
   };
 
