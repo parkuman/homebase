@@ -27,6 +27,10 @@
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # `stable` branch tracks the latest release
+    pi = {
+      url = "github:earendil-works/pi/stable";
+    };
   };
 
   outputs =
@@ -37,6 +41,7 @@
       home-manager,
       nix-darwin,
       ragenix,
+      pi,
       ...
     }:
     let
@@ -77,7 +82,7 @@
                 backupFileExtension = "backup";
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                extraSpecialArgs = { inherit user; };
+                extraSpecialArgs = { inherit user pi; };
                 users.${user.username} = {
                   imports = [ ./hosts/nixos/parker-desktop/home.nix ];
                 };

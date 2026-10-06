@@ -19,6 +19,7 @@ in
   imports = [
     ../../../modules/apps/gpg
     ../../../modules/apps/gpu-screen-recorder
+    ../../../modules/apps/pi
     ../../../modules/apps/tmux
   ];
   home = {
@@ -37,6 +38,7 @@ in
       discord
       mangohud
       heroic
+      mgba
 
       # other
       obsidian
