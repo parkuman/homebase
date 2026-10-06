@@ -13,7 +13,6 @@ with pkgs;
   lazygit
   neovim
   nodejs
-  opencode
   ripgrep
   starship
   tmux
