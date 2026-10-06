@@ -1,18 +1,20 @@
 {
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "1.0.4",
   "theme": "gruvbox-dark",
   "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-4-6",
+  "defaultModel": "claude-sonnet-5-5",
   "editorPaddingX": 1,
   "outputPad": 1,
   "packages": [
-    "npm:pi-mcp-adapter",
     "npm:pi-lens"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "high",
   "enabledModels": [
     "anthropic/claude-opus-5-5",
-    "anthropic/claude-sonnet-5"
+    "anthropic/claude-sonnet-5-5"
+  ],
+  "extensions": [
+    "+builtin:mcp"
   ]
 }
