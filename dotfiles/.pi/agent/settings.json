@@ -4,7 +4,7 @@
   "defaultProvider": "anthropic",
   "defaultModel": "claude-sonnet-5-5",
   "editorPaddingX": 1,
-  "outputPad": 1,
+  "outputPad": 0,
   "packages": [
     "npm:pi-lens"
   ],
