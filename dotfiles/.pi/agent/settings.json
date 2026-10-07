@@ -12,7 +12,8 @@
   "defaultThinkingLevel": "high",
   "enabledModels": [
     "anthropic/claude-opus-5-5",
-    "anthropic/claude-sonnet-5-5"
+    "anthropic/claude-sonnet-5-5",
+    "openrouter/~deepseek/deepseek-flash-latest"
   ],
   "extensions": [
     "+builtin:mcp"
