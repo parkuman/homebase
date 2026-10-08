@@ -17,6 +17,7 @@ in
 
 {
   imports = [
+    ../../../modules/apps/gale
     ../../../modules/apps/gpg
     ../../../modules/apps/gpu-screen-recorder
     ../../../modules/apps/pi
