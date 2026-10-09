@@ -21,6 +21,7 @@ in
     ../../../modules/apps/gpg
     ../../../modules/apps/gpu-screen-recorder
     ../../../modules/apps/pi
+    ../../../modules/apps/r2modman
     ../../../modules/apps/tmux
   ];
   home = {
