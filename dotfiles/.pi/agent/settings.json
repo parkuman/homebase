@@ -17,5 +17,8 @@
   ],
   "extensions": [
     "+builtin:mcp"
-  ]
+  ],
+  "retry": {
+    "maxRetries": 10
+  }
 }
