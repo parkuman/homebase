@@ -44,6 +44,10 @@
       "env": {
         "ROLLBAR_ACCESS_TOKEN": "${ROLLBAR_ACCOUNT_ACCESS_TOKEN}"
       }
+    },
+    "intercom": {
+      "urL": "https://mcp.intercom.com/mcp",
+      "lifecycle": "lazy"
     }
   }
 }
