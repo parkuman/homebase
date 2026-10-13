@@ -17,11 +17,13 @@ in
 
 {
   imports = [
+    ../../../modules/apps/claude-code
     ../../../modules/apps/gale
     ../../../modules/apps/gpg
     ../../../modules/apps/gpu-screen-recorder
     ../../../modules/apps/pi
     ../../../modules/apps/r2modman
+    ../../../modules/apps/t3code
     ../../../modules/apps/tmux
   ];
   home = {

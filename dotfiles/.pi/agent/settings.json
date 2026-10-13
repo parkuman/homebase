@@ -6,7 +6,8 @@
   "editorPaddingX": 1,
   "outputPad": 0,
   "packages": [
-    "npm:pi-lens"
+    "npm:pi-lens",
+    "npm:pi-claude-bridge"
   ],
   "hideThinkingBlock": false,
   "defaultThinkingLevel": "high",
