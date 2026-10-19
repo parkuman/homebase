@@ -4,5 +4,6 @@ let
   recipients = [parker-m3 nas];
 in {
   "restic-password.age".publicKeys = recipients;
+  "restic-qnap-rest-container-htpasswd.age".publicKeys = recipients;
 }
 

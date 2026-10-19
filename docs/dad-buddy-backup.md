@@ -21,9 +21,64 @@ transfer files.
   - `/etc/passwd` had an entry pointing at `/share/homes/nasty-pee`, but QNAP only creates that
     directory when you explicitly enable "Home Folder" for a user, which hadn't happened
 - had to `mkdir -p /share/homes/nasty-pee/.ssh` create `authorized_keys` with the public key from the NAS pasted in
+  - i noticed on a reboot this dir disappeared. Enabling the home folder feature in QNAP should fix this hopefully:
+    - control panel > privilege > users > advanced > home folder
+    - enable home folder for all users (check) > DataVol1 > apply
 - QNAP's real SSH config has an AllowUsers allow-list
 - This is what the UI's "only administrators can use SSH" warning actually meant (not a special SFTP restriction), just a plain AllowUsers admin administrator line blocking every other account. Had to add `nasty-pee` to it.
   - Gotcha: QNAP has a decoy `/etc/ssh/sshd_config` that isn't actually used the real
     one sshd was launched with is `/etc/config/ssh/sshd_config` (found
     via ps aux | grep sshd, looking at its -f flag)
 - Result: `nasty-pee` can SSH/SFTP in, has RW on `backup` only but can list files elsewhere
+
+## Realizing that ssh settings get wiped on QNAP restart
+
+I realized that ssh settings on the QNAP kept getting wiped on restarts, so nasty-pee couldn't ssh/sftp in. I also found that the QuFTP app wouldn't allow SFTP as a protocol so gave up there.
+
+New plan:
+
+- container station restic server
+
+```yaml
+services:
+  rest-server:
+    image: restic/rest-server:0.14.0
+    container_name: parker-restic-backup-server
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      OPTIONS: "--append-only --private-repos"
+    volumes:
+      - /share/backup/restic:/data
+```
+
+Before starting it, it needs a `.htpasswd` file in `/data`. This username and password is what my NAS will use to login to this one.
+
+On my machine I ran:
+
+```bash
+htpasswd -B -c .htpasswd nas
+# type in password
+```
+
+Then on the QNAP i ssh'ed in as administrator and ran
+
+```bash
+printf '%s\n' 'CONTENTS_OF_HTPASSWD' | sudo tee /share/backup/restic/.htpasswd >/dev/null
+```
+
+Then started the container.
+
+Then for nix/age setup i ran:
+
+```bash
+cd homebase/nix/hosts/nixos/nas/secrets
+nix shell nixpkgs#ragenix -c ragenix -e restic-qnap-rest-container-htpasswd.age
+# opens nano
+
+RESTIC_REST_USERNAME=nas
+RESTIC_REST_PASSWORD=the-password-i-chose
+
+# save and exit
+```
