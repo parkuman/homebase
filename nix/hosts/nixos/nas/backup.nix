@@ -18,6 +18,7 @@ in
       Persistent = true; # runs a missed backup after downtime
       RandomizedDelaySec = "10m"; # jitter
     };
+    pruneOpts = [ "--keep-daily 7" "--keep-weekly 4" "--keep-monthly 12" ];
   };
 
   systemd.services.restic-backups-dad = {
