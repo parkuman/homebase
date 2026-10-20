@@ -18,7 +18,12 @@ in
       Persistent = true; # runs a missed backup after downtime
       RandomizedDelaySec = "10m"; # jitter
     };
-    pruneOpts = [ "--keep-daily 7" "--keep-weekly 4" "--keep-monthly 12" ];
+    pruneOpts = [ 
+      "--keep-daily 7" # Keep the newest snapshot from each of the last 7 days
+      "--keep-weekly 4" # Also keep one per week for the last 4 weeks
+      "--keep-monthly 12" # Also keep one per month for the last 12 months
+      # any snapshots older than 12 months are pruned
+    ];
   };
 
   systemd.services.restic-backups-dad = {
