@@ -6,6 +6,7 @@ in
   age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ]; # on all NixOS machines
   age.secrets.restic-password.file = ./secrets/restic-password.age;
   age.secrets.restic-qnap-rest-container.file = ./secrets/restic-qnap-rest-container.age;
+  age.secrets.healthchecks-nas-to-qnap-url.file = ./secrets/healthchecks-nas-to-qnap-url.age;
 
   services.restic.backups.dad = {
     initialize = true;
@@ -29,5 +30,16 @@ in
   systemd.services.restic-backups-dad = {
     after = [ "network-online.target" "tailscaled.service" ];
     wants = [ "network-online.target" ];
+    serviceConfig.ExecStartPost = "-${pkgs.writeShellScript "restic-dad-ping" ''
+      ${pkgs.curl}/bin/curl -fsS -m 10 --retry 3 -o /dev/null "$(cat ${config.age.secrets.healthchecks-nas-to-qnap-url.path})"
+    ''}";
+  };
+
+  # on failure, healthcheck fail immediately
+  systemd.services.restic-dad-ping-fail = {
+    serviceConfig.Type = "oneshot";
+    script = ''
+      ${pkgs.curl}/bin/curl -fsS -m 10 --retry 3 -o /dev/null "$(cat ${config.age.secrets.healthchecks-nas-to-qnap-url.path})/fail"
+    '';
   };
 }
