@@ -33,6 +33,7 @@ in
     serviceConfig.ExecStartPost = "-${pkgs.writeShellScript "restic-dad-ping" ''
       ${pkgs.curl}/bin/curl -fsS -m 10 --retry 3 -o /dev/null "$(cat ${config.age.secrets.healthchecks-nas-to-qnap-url.path})"
     ''}";
+    unitConfig.OnFailure = [ "restic-dad-ping-fail.service" ]
   };
 
   # on failure, healthcheck fail immediately
