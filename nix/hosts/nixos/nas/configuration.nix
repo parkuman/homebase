@@ -9,6 +9,7 @@
     [
       ./hardware-configuration.nix
 
+      ./caddy.nix
       ./backup.nix
       ./immich.nix
     ];
