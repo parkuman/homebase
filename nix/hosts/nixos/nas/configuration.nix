@@ -125,7 +125,11 @@
   networking.firewall.trustedInterfaces = [ "tailscale0" ]; # makes sure ssh and samba traffic are not blocked (among other things)
 
   services.samba = {
-    package = pkgs.samba4Full;
+    package = pkgs.samba4Full.override {
+      # ceph fails to build (and isn't in the binary cache) on current nixpkgs; we don't use cephfs/gluster
+      enableCephFS = false;
+      enableGlusterFS = false;
+    };
     # ^^ `samba4Full` is compiled with avahi, ldap, AD etc support (compared to the default package, `samba`
     # Required for samba to register mDNS records for auto discovery 
     # See https://github.com/NixOS/nixpkgs/blob/592047fc9e4f7b74a4dc85d1b9f5243dfe4899e3/pkgs/top-level/all-packages.nix#L27268
