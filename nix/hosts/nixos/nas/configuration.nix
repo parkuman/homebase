@@ -8,7 +8,9 @@
   imports =
     [
       ./hardware-configuration.nix
+
       ./backup.nix
+      ./immich.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
