@@ -33,6 +33,7 @@
   # if these zfs pools don't exist, don't block boot
   fileSystems."/tank/media".options = [ "nofail" ];
   fileSystems."/tank/drive".options = [ "nofail" ];
+  fileSystems."/tank/photos".options = [ "nofail" ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";

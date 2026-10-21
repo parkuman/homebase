@@ -86,6 +86,18 @@ To update this declaratively (kind of) I then ran:
 sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode mount --root-mountpoint / --flake /srv/homebase/nix#nas
 ```
 
+#### Adding a photos dataset for immich (months later)
+
+I added the info for the zfs dataset to disko.nix, but didn't re-run it.
+
+Instead, I ran this on the NAS:
+
+```bash
+sudo zfs create -o mountpoint=legacy -o recordsize=1M data/photos
+```
+
+and also updated the nofail entry in `configuration.nix`
+
 ### adding new users
 
 - created a family group, then added users

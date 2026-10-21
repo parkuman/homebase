@@ -60,6 +60,16 @@
               chmod 2775 "$mountpoint"
             '';
           };
+
+          # photos
+          photos = {
+            type = "zfs_fs";
+            mountpoint = "/tank/photos";
+            options = {
+              mountpoint = "legacy";
+              recordsize = "1M"; # large sequential files
+            };
+          };
         };
       };
     };
