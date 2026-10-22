@@ -7,5 +7,6 @@ in {
   "restic-qnap-rest-container.age".publicKeys = recipients;
   "healthchecks-nas-to-qnap-url.age".publicKeys = recipients;
   "cloudflare-dns-token.age".publicKeys = recipients;
+  "cloudflared-tunnel-immich.age".publicKeys = recipients;
 }
 
