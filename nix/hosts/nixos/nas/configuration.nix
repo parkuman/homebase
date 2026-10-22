@@ -13,6 +13,7 @@
       ./dns.nix
       ./backup.nix
       ./immich.nix
+      ./immich-public-proxy.nix
       ./tls.nix
     ];
 
