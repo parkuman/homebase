@@ -123,7 +123,10 @@
 
   # Tailscale
   # TODO: switch to declarative auth key via authKeyFile + agenix/sops-nix instead of interactive `tailscale up`.
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+  };
   networking.firewall.trustedInterfaces = [ "tailscale0" ]; # makes sure ssh and samba traffic are not blocked (among other things)
 
   services.samba = {
