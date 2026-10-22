@@ -10,7 +10,6 @@
       dnsProvider = "cloudflare";
       environmentFile = config.age.secrets.cloudflare-dns-token.path;
       dnsResolver = "1.1.1.1:53";
-      server = "https://acme-staging-v02.api.letsencrypt.org/directory";
     };
   };
 }
