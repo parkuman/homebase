@@ -10,6 +10,7 @@
       ./hardware-configuration.nix
 
       ./caddy.nix
+      ./dns.nix
       ./backup.nix
       ./immich.nix
     ];
