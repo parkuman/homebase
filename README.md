@@ -64,10 +64,10 @@ The current repo structure is close to the one outlined in the [Flux Documentati
 - [x] get ZFS working
 - [x] get samba working
 - [x] set up users for samba / unix so jill and i have one
-- [ ] get DNS working .. ?
-- [ ] get it working over tailscale
-- [ ] buddy backup
-- [ ] install immich
+- [x] get DNS working .. ?
+- [x] get it working over tailscale
+- [x] buddy backup
+- [x] install immich
 - [ ] immich cloudflare tunnel for sharing
 
 ### Hardware
