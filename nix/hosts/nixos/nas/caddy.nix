@@ -19,7 +19,7 @@
 
       ":80" = {
         extraConfig = ''
-          respond 404
+          redir https://{host}{uri} permanent
         '';
       };
     };
