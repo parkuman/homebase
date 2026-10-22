@@ -8,6 +8,7 @@
   services.immich-public-proxy = {
     enable = true;
     immichUrl = "http://127.0.0.1:2283";
+    settings.ipp.showHomePage = false;
   };
 
   systemd.services.immich-public-proxy.environment.PUBLIC_BASE_URL = "https://photos.prowe.ca";
