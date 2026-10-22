@@ -13,6 +13,7 @@
       ./dns.nix
       ./backup.nix
       ./immich.nix
+      ./tls.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
