@@ -9,7 +9,8 @@
         credentialsFile = config.age.secrets.cloudflared-tunnel-immich.path;
         default = "http_status:404";
         ingress = {
-          "photos.prowe.ca" = "http://127.0.0.1:3000";
+          # Caddy splits /upload/* (upload service) from everything else (IPP); see immich-public-proxy.nix
+          "photos.prowe.ca" = "http://127.0.0.1:8088";
         };
       };
     };
