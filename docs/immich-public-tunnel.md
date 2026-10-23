@@ -5,7 +5,7 @@ without having to have an account, and without having to connect via tailscale o
 
 Solution: <https://github.com/alangrainger/immich-public-proxy> with a Cloudflare Tunnel.
 
-This allows me to share links for viewing (and eventually uploading) without exposing any ports
+This allows me to share links for viewing and uploading without exposing any ports
 from my LAN to the world.
 
 ## Immich Settings
@@ -38,3 +38,10 @@ Steps: in the Cloudflare dashboard, picked the prowe.ca zone, then Caching → C
   - Value: `/share/video/`
   - AND Hostname equals `photos.prowe.ca`, so the rule doesn't touch other hostnames in the zone.
 - Then: Cache eligibility → Bypass cache.
+
+## Uploads
+
+- Tunnel -> Caddy on `127.0.0.1:8088` (`upload.caddy.port`) -> `/upload/*` goes to the upload service (:3001), everything else to IPP (:3000).
+- `maxFileSize = 100` because Cloudflare's free plan rejects bodies over 100 MB.
+- In Immich: shared link -> enable "Allow public user to upload". Requires Immich >= 3.0.
+- Check: `https://photos.prowe.ca/upload/healthcheck` answers `upload-ok`.

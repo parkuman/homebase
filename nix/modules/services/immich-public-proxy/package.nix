@@ -1,11 +1,10 @@
-# immich-public-proxy 4.x: npm workspaces monorepo (shared/ + app/ + upload-app/)
-# that builds two programs: the read-only gallery proxy and the optional upload service.
-# Upstream: https://github.com/alangrainger/immich-public-proxy
 {
   lib,
   buildNpmPackage,
   fetchFromGitHub,
   makeWrapper,
+  nix-update-script,
+  nixosTests,
   nodejs,
 }:
 buildNpmPackage (finalAttrs: {
@@ -19,16 +18,17 @@ buildNpmPackage (finalAttrs: {
     hash = "sha256-Ozm6vQ3me9xa4qxcho5sUD1UZiQxquPDgjJqqoKz6Jo=";
   };
 
-  # package-lock.json is at the repo root and covers every workspace
+  # The repo is an npm workspace (shared/, app/, upload-app/) with a single
+  # package-lock.json at the root.
   npmDepsHash = "sha256-kwGHYuP0PDxs+7GpiGsdKq6o+F6Hu0Fi7mBdwI8Ciws=";
 
   nativeBuildInputs = [ makeWrapper ];
 
-  # root `npm run build` runs `tsc` in shared, app and upload-app (in that order)
+  # Runs `npm run build` in every workspace
   npmBuildScript = "build";
 
-  # The default install phase packs a single package; we need the whole workspace
-  # (node_modules/@ipp/core is a symlink to ../../shared), so install by hand.
+  # The default install phase packs a single package, but both programs need the
+  # whole workspace (node_modules/@ipp/core is a symlink to ../../shared).
   dontNpmInstall = true;
 
   installPhase = ''
@@ -39,11 +39,7 @@ buildNpmPackage (finalAttrs: {
     mkdir -p $out/lib/ipp
     cp -r package.json node_modules shared app upload-app $out/lib/ipp/
 
-    # tests, sources and docs aren't needed at runtime
-    rm -rf $out/lib/ipp/*/tests $out/lib/ipp/*/src/client
-
-    # Both apps serve ./public relative to the cwd and read ../config.json relative
-    # to dist/, so run each from its own directory.
+    # Both programs serve ./public relative to the working directory
     makeWrapper ${lib.getExe nodejs} $out/bin/immich-public-proxy \
       --chdir $out/lib/ipp/app \
       --add-flags $out/lib/ipp/app/dist/index.js \
@@ -56,11 +52,19 @@ buildNpmPackage (finalAttrs: {
     runHook postInstall
   '';
 
+  passthru = {
+    tests = {
+      inherit (nixosTests) immich-public-proxy;
+    };
+    updateScript = nix-update-script { };
+  };
+
   meta = {
     changelog = "https://github.com/alangrainger/immich-public-proxy/releases/tag/${finalAttrs.src.tag}";
     description = "Share your Immich photos and albums in a safe way without exposing your Immich instance to the public";
     homepage = "https://github.com/alangrainger/immich-public-proxy";
     license = lib.licenses.agpl3Only;
+    maintainers = with lib.maintainers; [ jaculabilis ];
     inherit (nodejs.meta) platforms;
     mainProgram = "immich-public-proxy";
   };
