@@ -3,6 +3,8 @@
   # TODO: remove once this lands in nixpkgs
   imports = [ ../../../modules/services/immich-public-proxy ];
 
+  systemd.services.immich-public-proxy.environment.PUBLIC_BASE_URL = "https://photos.prowe.ca";
+
   services.immich-public-proxy = {
     enable = true;
     immichUrl = "http://127.0.0.1:2283";

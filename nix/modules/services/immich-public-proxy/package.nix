@@ -7,28 +7,22 @@
   nixosTests,
   nodejs,
 }:
-buildNpmPackage (finalAttrs: {
+buildNpmPackage rec {
   pname = "immich-public-proxy";
   version = "4.1.1";
-
   src = fetchFromGitHub {
     owner = "alangrainger";
     repo = "immich-public-proxy";
-    tag = "v${finalAttrs.version}";
+    tag = "v${version}";
     hash = "sha256-Ozm6vQ3me9xa4qxcho5sUD1UZiQxquPDgjJqqoKz6Jo=";
   };
 
-  # The repo is an npm workspace (shared/, app/, upload-app/) with a single
-  # package-lock.json at the root.
   npmDepsHash = "sha256-kwGHYuP0PDxs+7GpiGsdKq6o+F6Hu0Fi7mBdwI8Ciws=";
 
   nativeBuildInputs = [ makeWrapper ];
 
-  # Runs `npm run build` in every workspace
-  npmBuildScript = "build";
-
-  # The default install phase packs a single package, but both programs need the
-  # whole workspace (node_modules/@ipp/core is a symlink to ../../shared).
+  # The repo is an npm workspace (shared/, app/, upload-app/). The default install
+  # phase packs a single package, but both programs need the whole workspace.
   dontNpmInstall = true;
 
   installPhase = ''
@@ -60,7 +54,7 @@ buildNpmPackage (finalAttrs: {
   };
 
   meta = {
-    changelog = "https://github.com/alangrainger/immich-public-proxy/releases/tag/${finalAttrs.src.tag}";
+    changelog = "https://github.com/alangrainger/immich-public-proxy/releases/tag/${src.tag}";
     description = "Share your Immich photos and albums in a safe way without exposing your Immich instance to the public";
     homepage = "https://github.com/alangrainger/immich-public-proxy";
     license = lib.licenses.agpl3Only;
@@ -68,4 +62,4 @@ buildNpmPackage (finalAttrs: {
     inherit (nodejs.meta) platforms;
     mainProgram = "immich-public-proxy";
   };
-})
+}
