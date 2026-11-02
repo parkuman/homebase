@@ -1,9 +1,7 @@
 { config, ... }:
 {
-  # TODO: remove once this lands in nixpkgs
+  # TODO: remove once the publicBaseUrl PR (nixpkgs) lands
   imports = [ ../../../modules/services/immich-public-proxy ];
-
-  systemd.services.immich-public-proxy.environment.PUBLIC_BASE_URL = "https://photos.prowe.ca";
 
   services.immich-public-proxy = {
     enable = true;
