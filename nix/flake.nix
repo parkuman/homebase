@@ -56,6 +56,13 @@
             ./hosts/macos/parker-m3/configuration.nix
           ];
         };
+        cci-m4 = nix-darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+          specialArgs = { inherit user; };
+          modules = [
+            ./hosts/macos/cci-m4/configuration.nix
+          ];
+        };
       };
       nixosConfigurations = {
         nas = nixpkgs.lib.nixosSystem {
