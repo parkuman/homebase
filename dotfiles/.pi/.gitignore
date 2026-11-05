@@ -9,3 +9,5 @@ agent/extensions/*
 !agent/themes/
 agent/themes/*
 !agent/themes/**
+agent/skills/*
+!agent/skills/**
