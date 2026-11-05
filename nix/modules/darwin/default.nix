@@ -2,7 +2,10 @@
 {
   environment.systemPackages =
     with pkgs;
-    [ /* any shared darwin specific packages i may want */ ]
+    [
+      gnupg
+      pinentry_mac
+    ]
     ++ (import ../shared/packages.nix { inherit pkgs; });
 
   nix = {
