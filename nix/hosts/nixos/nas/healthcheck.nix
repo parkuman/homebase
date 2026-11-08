@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   /* build a bash script as a package */
   healthcheck = pkgs.writeShellApplication {
@@ -27,7 +27,7 @@ in
   systemd.services.nas-healthcheck = {
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${healthcheck}/bin/nas-healthcheck"; 
+      ExecStart = lib.getExe healthcheck;
     };
   };
 
