@@ -41,7 +41,11 @@ i5-10210U
       - 1 control plane node
       - 1 worker node (for now, plan to extend this via more VMs or more physical servers later if needed)
 
-## Sops
+## `k8s/` Repo structure
+
+The current repo structure is close to the one outlined in the [Flux Documentation](https://fluxcd.io/flux/guides/repository-structure/), but more suited to a simple homelab setup.
+
+### Sops
 
 Using [`sops`](https://github.com/getsops/sops) for secret management.
 
@@ -49,10 +53,6 @@ Using [`sops`](https://github.com/getsops/sops) for secret management.
 cd k8s
 sops -e -i apps/<blah>/secret.yaml
 ```
-
-## `k8s/` Repo structure
-
-The current repo structure is close to the one outlined in the [Flux Documentation](https://fluxcd.io/flux/guides/repository-structure/), but more suited to a simple homelab setup.
 
 ## Plan moving forward
 
@@ -68,7 +68,7 @@ The current repo structure is close to the one outlined in the [Flux Documentati
 - [x] get it working over tailscale
 - [x] buddy backup
 - [x] install immich
-- [ ] immich cloudflare tunnel for sharing
+- [x] immich cloudflare tunnel for sharing
 
 ### Hardware
 
@@ -162,29 +162,10 @@ Fully disposable. Nothing depends on it.
 #### How I want DNS to work
 
 - AdGuard Home runs on the NAS as a NixOS service
-- Router DHCP hands out the NAS IP as the DNS server for all LAN devices.
+- `*.home.prowe.ca` in Cloudflare DNS points at the NAS' local IP
+- Caddy on the NAS directs it to the right spot.
+- Router DHCP should also hand out the NAS IP as the DNS server for all LAN devices.
 - DNS rewrites are declared in Nix. version-controlled, reviewed in PRs, not clicked in a UI.
-
-#### DNS rewrite config (in NixOS)
-
-```nix
-services.adguardhome = {
-  enable = true;
-  mutableSettings = false;
-  settings.dns.rewrites = [
-    # NAS services
-    { domain = "immich.home.prowe.ca";    answer = "<NAS_IP>"; }
-    { domain = "jellyfin.home.prowe.ca";  answer = "<NAS_IP>"; }
-    { domain = "forgejo.home.prowe.ca";   answer = "<NAS_IP>"; }
-    { domain = "home.prowe.ca";           answer = "<NAS_IP>"; }
-    { domain = "pi.home.prowe.ca";        answer = "<NAS_IP>"; }
-    # Chromebox services
-    { domain = "grafana.home.prowe.ca";   answer = "<METALLB_IP>"; }
-    { domain = "mealie.home.prowe.ca";    answer = "<METALLB_IP>"; }
-    { domain = "couchdb.home.prowe.ca";   answer = "<METALLB_IP>"; }
-  ];
-};
-```
 
 #### TLS certificates
 
@@ -228,7 +209,7 @@ services.adguardhome = {
 
 #### Reverse direction (optional)
 
-- Dad backs up his QNAP to my NAS. I share your NAS device with his tailnet.
+- Dad backs up his QNAP to my NAS. I share my NAS device with his tailnet.
 
 ### Management
 
