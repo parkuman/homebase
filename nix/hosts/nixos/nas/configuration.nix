@@ -12,6 +12,7 @@
       ./caddy.nix
       ./dns.nix
       ./backup.nix
+      ./healthcheck.nix
       ./immich.nix
       ./immich-cloudflared-tunnel.nix
       ./immich-public-proxy.nix
