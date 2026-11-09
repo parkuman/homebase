@@ -1,5 +1,6 @@
 { pkgs, user, ... }:
 {
+  imports = [ ../shared/unfree.nix ];
   environment.systemPackages =
     with pkgs;
     [

@@ -5,5 +5,11 @@
 {
   imports = [ ../../../modules/darwin ];
   system.stateVersion = 5;
-  environment.systemPackages = with pkgs; [ /* specific to this machine */ ];
+  environment.systemPackages = with pkgs; [
+    vault
+  ];
+
+  unfreePackages = [ 
+    "vault" 
+  ];
 }
