@@ -8,6 +8,7 @@
   environment.systemPackages = with pkgs; [
     vault
     postgresql
+    circleci-cli
   ];
 
   unfreePackages = [ 
