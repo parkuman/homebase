@@ -9,6 +9,7 @@
     vault
     postgresql
     circleci-cli
+    github-cli
   ];
 
   unfreePackages = [ 
