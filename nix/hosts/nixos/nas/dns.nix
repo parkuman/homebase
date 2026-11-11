@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 let
   nasLanIP = "192.168.40.59";
   nasTailnetIP = "100.89.0.44";
@@ -39,6 +39,12 @@ in
   systemd.services.coredns = {
     after = [ "tailscaled.service" ];
     wants = [ "tailscaled.service" ];
+    serviceConfig = {
+      # wait until we have an IP from tailscale for real
+      ExecStartPre = "${pkgs.runtimeShell} -c 'for i in $(seq 60); do ${pkgs.iproute2}/bin/ip -4 addr show tailscale0 | grep -q ${nasTailnetIP} && exit 0; sleep 1; done; exit 1'";
+      RestartSec = 5;
+    };
+    startLimitIntervalSec = 0;  # don't give up after repeated failures
   };
 
   networking.firewall.allowedTCPPorts = [ 53 ];
