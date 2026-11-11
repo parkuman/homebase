@@ -1,5 +1,5 @@
 let
-  qnapHost = "100.127.86.79";
+  dadQnap = (import ../../../lib/hosts.nix).dadQnap;
 in
 { config, pkgs, ... }:
 {
@@ -10,7 +10,7 @@ in
 
   services.restic.backups.dad = {
     initialize = true;
-    repository = "rest:http://${qnapHost}:8000/nas/";
+    repository = "rest:http://${dadQnap}:8000/nas/";
     passwordFile = config.age.secrets.restic-password.path;
     environmentFile = config.age.secrets.restic-qnap-rest-container.path;
     paths = [
