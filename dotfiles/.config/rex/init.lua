@@ -7,6 +7,41 @@ rex.bind(leader .. ">z", "pane.zoom")
 
 rex.bind(leader .. ">c", "client.tab.new")
 rex.bind(leader .. ">s", "session.switch")
+
+-- leader + 1..9 -> go to that tab *within the current session* (tmux-style).
+-- (client.tab.goto indexes the flat tab list across all sessions.)
+rex.action({
+	name = "session_tab_goto",
+	title = "Go to Tab in Current Session",
+	run = function(ctx, args)
+		local view, verr = rex.session.view({})
+		if view == nil then
+			error(verr, 0)
+		end
+		local index = tonumber(args.index)
+		if index > #(view.windows or {}) then
+			return -- no such tab in this session: do nothing
+		end
+		-- Translate to the flat index: tabs of all earlier sessions come first.
+		local offset = 0
+		local list, lerr = rex.call("session.list")
+		if list == nil then
+			error(lerr, 0)
+		end
+		for _, s in ipairs(list.sessions or {}) do
+			if s.session_id == view.session_id then
+				break
+			end
+			local v = rex.session.view({ session_id = s.session_id })
+			offset = offset + #((v and v.windows) or {})
+		end
+		rex.client.queue("client.tab.goto", { index = offset + index })
+	end,
+})
+for i = 1, 9 do
+	rex.bind(leader .. ">" .. i, "session_tab_goto", { index = i })
+end
+
 -- vim-like pane navigation (ctrl+h/j/k/l)
 -- requires https://github.com/baggiponte/rex-navigator.nvim to work well with neovim
 rex.bind("ctrl+h", "pane.focus.left")
