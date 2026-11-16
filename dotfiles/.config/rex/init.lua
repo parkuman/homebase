@@ -8,6 +8,7 @@ rex.bind(leader .. ">x", "pane.close")
 
 rex.bind(leader .. ">c", "client.tab.new")
 rex.bind(leader .. ">s", "session.switch")
+rex.bind(leader .. ">r", "session.rename")
 
 -- leader + 1..9 -> go to that tab *within the current session* (tmux-style).
 -- (client.tab.goto indexes the flat tab list across all sessions.)
