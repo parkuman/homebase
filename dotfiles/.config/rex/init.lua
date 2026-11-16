@@ -94,4 +94,55 @@ rex.action({
 })
 rex.bind(leader .. ">g", "lazygit_float")
 
+-- tmux-style copy mode: capture the focused block's screen+scrollback to a temp file
+-- and open it read-only in nvim in a floating layer. q quits (closes the layer).
+rex.action({
+	name = "copy_mode",
+	title = "Copy Mode (nvim scrollback)",
+	run = function(ctx, args)
+		if ctx.block_id == nil then
+			error("no focused block", 0)
+		end
+		-- Capture NOW, before the layer opens: opening it un-zooms the source pane, which resizes
+		-- it and makes the program redraw narrow before a shell-side capture could run.
+		local cap, cerr = rex.block.call("com.superlogical.terminal", "format", {
+			block_id = ctx.block_id,
+			format = "vt",
+			trim = true,
+			unwrap = true,
+		})
+		if cap == nil then
+			error(cerr or "capture failed", 0)
+		end
+		local path = os.tmpname()
+		local fh, ferr = io.open(path, "wb")
+		if fh == nil then
+			error(ferr, 0)
+		end
+		fh:write(cap.content)
+		fh:close()
+		-- VT rendered in an nvim terminal buffer: colors display, but yanks copy plain text.
+		local script = table.concat({
+			'nvim -n -c "set scrollback=100000 nonumber norelativenumber signcolumn=no"'
+				.. ' -c "autocmd TermClose * stopinsert | normal! G"'
+				.. ' -c "autocmd TermOpen * nnoremap <buffer> q :qa!<CR>"'
+				.. ' -c "terminal cat \\"$1\\""',
+			'rm -f "$1"',
+		}, "; ")
+		local _, err = rex.session.new_layer({
+			bounds = { 0.02, 0.03, 0.96, 0.94 },
+			focus = true,
+			layout = rex.layout.block({
+				flavor = "com.superlogical.terminal.shell",
+				label = "copy-mode",
+				options = { command = { "sh", "-c", script, "sh", path } },
+			}),
+		})
+		if err ~= nil then
+			error(err, 0)
+		end
+	end,
+})
+rex.bind(leader .. ">[", "copy_mode")
+
 --- TODO: rex theming declaratively?
