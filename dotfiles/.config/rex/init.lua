@@ -4,6 +4,7 @@ rex.bind(leader .. ">" .. leader, "pane.send_key", { key = leader })
 rex.bind(leader .. ">shift+'", "pane.split", { direction = "down" })
 rex.bind(leader .. ">shift+5", "pane.split", { direction = "right" })
 rex.bind(leader .. ">z", "pane.zoom")
+rex.bind(leader .. ">x", "pane.close")
 
 rex.bind(leader .. ">c", "client.tab.new")
 rex.bind(leader .. ">s", "session.switch")
