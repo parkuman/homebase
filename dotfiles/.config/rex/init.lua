@@ -134,10 +134,11 @@ rex.action({
 rex.bind(leader .. ">g", "lazygit_float")
 
 -- tmux-style copy mode: capture the focused block's screen+scrollback to a temp file
--- and open it read-only in nvim in a floating layer. q quits (closes the layer).
+-- and open it as an editable, colored buffer in nvim in a floating layer.
+-- Edit freely, visually select + yank what you want. q quits (closes the layer, discards edits).
 rex.action({
 	name = "copy_mode",
-	title = "Copy Mode (nvim scrollback)",
+	title = "Copy Mode (editable nvim scrollback)",
 	run = function(ctx, args)
 		if ctx.block_id == nil then
 			error("no focused block", 0)
@@ -160,12 +161,14 @@ rex.action({
 		end
 		fh:write(cap.content)
 		fh:close()
-		-- VT rendered in an nvim terminal buffer: colors display, but yanks copy plain text.
+		-- VT capture loaded into a normal (editable) nvim buffer; copy_mode_ansi.lua strips the
+		-- escapes and re-applies the colors as highlights. Jumps to the bottom. No swap file;
+		-- yanks go to the system clipboard. q quits without saving.
 		local script = table.concat({
-			'nvim -n -c "set scrollback=100000 nonumber norelativenumber signcolumn=no"'
-				.. ' -c "autocmd TermClose * stopinsert | normal! G"'
-				.. ' -c "autocmd TermOpen * nnoremap <buffer> q :qa!<CR>"'
-				.. ' -c "terminal cat \\"$1\\""',
+			'nvim -n -c "set nonumber norelativenumber signcolumn=no clipboard=unnamedplus"'
+				.. ' -c "nnoremap <buffer> q :qa!<CR>"'
+				.. ' -c "luafile ' .. (os.getenv("HOME") .. "/.config/rex/copy_mode_ansi.lua") .. '"'
+				.. ' -c "normal! G" "$1"',
 			'rm -f "$1"',
 		}, "; ")
 		local _, err = rex.session.new_layer({
