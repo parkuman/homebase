@@ -3,7 +3,7 @@
   "theme": "gruvbox-dark",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-sonnet-5-5",
-  "editorPaddingX": 1,
+  "editorPaddingX": 0,
   "outputPad": 0,
   "packages": [
     "npm:pi-lens",
@@ -21,5 +21,6 @@
   ],
   "retry": {
     "maxRetries": 10
-  }
+  },
+  "tuiMode": "regular"
 }
