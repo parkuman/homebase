@@ -1,8 +1,5 @@
 { config, ... }:
 {
-  # TODO: remove once the publicBaseUrl PR (nixpkgs) lands
-  imports = [ ../../../modules/services/immich-public-proxy ];
-
   services.immich-public-proxy = {
     enable = true;
     immichUrl = "http://127.0.0.1:2283";
