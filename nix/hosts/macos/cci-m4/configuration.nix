@@ -10,6 +10,7 @@
     postgresql
     circleci-cli
     github-cli
+    leiningen
     # Rex is installed via DMG; expose its CLI on PATH (path has spaces, so wrap instead of systemPath)
     (writeShellScriptBin "rex" ''
       exec "/Applications/Rex Beta.app/Contents/Helpers/Rex Server.rex/Contents/MacOS/rex" "$@"
