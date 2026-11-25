@@ -33,6 +33,7 @@ alias oc=opencode
 if [[ -f ~/.config/work/.zshrc ]]; then
     source ~/.config/work/.zshrc
 fi
+[[ -f ~/.zshrc.env ]] && source ~/.zshrc.env
 
 export AISH_PROVIDER=anthropic
 for f in ~/.dotfiles/scripts/*.sh; do source "$f"; done
