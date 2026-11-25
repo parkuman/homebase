@@ -1,14 +1,112 @@
 local leader = "ctrl+space"
 
-rex.bind(leader .. ">" .. leader, "pane.send_key", { key = leader })
-rex.bind(leader .. ">shift+'", "pane.split", { direction = "down" })
-rex.bind(leader .. ">shift+5", "pane.split", { direction = "right" })
-rex.bind(leader .. ">z", "pane.zoom")
-rex.bind(leader .. ">x", "pane.close")
+-- Leader is a one-shot key *mode* ("leader") rather than a key sequence, so we get to run code
+-- when it opens: tabs of the current session get a "[N] " prefix so leader+N is obvious.
+-- Every binding in the mode (and every action bound there) must call leave_leader() to drop the
+-- hints and exit the mode. Escape cancels. Mode is exclusive, so stray keys never reach the shell.
+local hint_state = (os.getenv("TMPDIR") or "/tmp") .. "/rex-leader-labels.json"
 
-rex.bind(leader .. ">c", "client.tab.new")
-rex.bind(leader .. ">s", "session.switch")
-rex.bind(leader .. ">r", "session.rename")
+local function read_saved()
+	local fh = io.open(hint_state, "rb")
+	if fh == nil then
+		return {}
+	end
+	local text = fh:read("*a")
+	fh:close()
+	return rex.json.decode(text) or {}
+end
+
+-- Restore the labels saved by show_tab_hints (only if the tab still shows our prefix).
+local function clear_tab_hints()
+	local saved = read_saved()
+	if next(saved) == nil then
+		return
+	end
+	local view = rex.session.view({})
+	for _, win in ipairs((view and view.windows) or {}) do
+		local orig = saved[win.window_id]
+		if orig ~= nil and (win.label or ""):match("^%[%d%] ") then
+			rex.session.set_window_label({ window_id = win.window_id, label = orig })
+		end
+	end
+	os.remove(hint_state)
+end
+
+local function show_tab_hints()
+	clear_tab_hints()
+	local view, verr = rex.session.view({})
+	if view == nil then
+		error(verr, 0)
+	end
+	local saved = {}
+	for i, win in ipairs(view.windows or {}) do
+		if i > 9 then
+			break
+		end
+		local label = win.label or ""
+		-- Default labels ("Window <id>") are not what the tab shows (it shows the terminal title),
+		-- so number the title; restoring "" brings the default back.
+		local base = label
+		if label:match("^Window %x+$") then
+			local t = win.focused_block_id
+				and rex.block.call("com.superlogical.terminal", "title", { block_id = win.focused_block_id })
+			base = (t and t.title ~= "" and t.title) or label
+			saved[win.window_id] = ""
+		else
+			saved[win.window_id] = label
+		end
+		rex.session.set_window_label({ window_id = win.window_id, label = "[" .. i .. "] " .. base })
+	end
+	local fh = io.open(hint_state, "wb")
+	if fh ~= nil then
+		fh:write(rex.json.encode(saved))
+		fh:close()
+	end
+end
+
+local function leave_leader()
+	clear_tab_hints()
+	rex.client.queue("client.mode.exit")
+end
+
+rex.action({
+	name = "leader_open",
+	title = "Leader (show tab numbers)",
+	run = function()
+		show_tab_hints()
+		rex.client.queue("client.mode.enter", { name = "leader" })
+	end,
+})
+
+-- Wrapper for built-in client actions: drop hints, exit the mode, then run the action.
+rex.action({
+	name = "leader_run",
+	title = "Leader: run action",
+	run = function(ctx, args)
+		leave_leader()
+		if args ~= nil and args.action ~= nil then
+			rex.client.queue(args.action, args.args)
+		end
+	end,
+})
+
+rex.mode("leader", { exclusive = true })
+rex.bind(leader, "leader_open")
+
+local function lbind(key, action, args)
+	rex.bind("leader/" .. key, "leader_run", { action = action, args = args })
+end
+
+rex.bind("leader/escape", "leader_run")
+lbind(leader, "pane.send_key", { key = leader })
+lbind("shift+'", "pane.split", { direction = "down" })
+lbind("shift+5", "pane.split", { direction = "right" })
+lbind("z", "pane.zoom")
+lbind("x", "pane.close")
+
+lbind("c", "client.tab.new")
+lbind("s", "session.switch")
+lbind("r", "session.rename")
 
 -- leader + 1..9 -> go to that tab *within the current session* (tmux-style).
 -- (client.tab.goto indexes the flat tab list across all sessions.)
@@ -16,6 +114,7 @@ rex.action({
 	name = "session_tab_goto",
 	title = "Go to Tab in Current Session",
 	run = function(ctx, args)
+		leave_leader()
 		local view, verr = rex.session.view({})
 		if view == nil then
 			error(verr, 0)
@@ -41,7 +140,7 @@ rex.action({
 	end,
 })
 for i = 1, 9 do
-	rex.bind(leader .. ">" .. i, "session_tab_goto", { index = i })
+	rex.bind("leader/" .. i, "session_tab_goto", { index = i })
 end
 
 -- vim-like pane navigation (ctrl+h/j/k/l)
@@ -68,6 +167,7 @@ rex.action({
 	name = "lazygit_float",
 	title = "Toggle Floating Lazygit",
 	run = function(ctx, args)
+		leave_leader()
 		local view, verr = rex.session.view({})
 		if view == nil then
 			error(verr, 0)
@@ -131,7 +231,7 @@ rex.action({
 		end
 	end,
 })
-rex.bind(leader .. ">g", "lazygit_float")
+rex.bind("leader/g", "lazygit_float")
 
 -- tmux-style copy mode: capture the focused block's screen+scrollback to a temp file
 -- and open it as an editable, colored buffer in nvim in a floating layer.
@@ -140,6 +240,7 @@ rex.action({
 	name = "copy_mode",
 	title = "Copy Mode (editable nvim scrollback)",
 	run = function(ctx, args)
+		leave_leader()
 		if ctx.block_id == nil then
 			error("no focused block", 0)
 		end
@@ -185,6 +286,6 @@ rex.action({
 		end
 	end,
 })
-rex.bind(leader .. ">[", "copy_mode")
+rex.bind("leader/[", "copy_mode")
 
 --- TODO: rex theming declaratively?
