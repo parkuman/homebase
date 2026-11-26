@@ -1,11 +1,20 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 let
-  dadQnap = (import ../../../lib/hosts.nix).dadQnap;
+  cfg = config.nas.healthchecks;
+  checks = lib.attrsToList cfg; # [{ name; value = { script; path; }; }]
+
+  # each check becomes a bash function (exit status = result), run via check()
+  checkFns = lib.imap0 (i: c: ''
+    check_${toString i}() {
+      ${c.value.script}
+    }
+    check ${lib.escapeShellArg c.name} check_${toString i}
+  '') checks;
 
   /* build a bash script as a package */
   healthcheck = pkgs.writeShellApplication {
     name = "nas-healthchecks";
-    runtimeInputs = [ pkgs.systemd pkgs.curl pkgs.util-linux pkgs.zfs pkgs.tailscale pkgs.gnugrep pkgs.iputils ];
+    runtimeInputs = lib.unique (lib.concatMap (c: c.value.path) checks);
     text = /* bash */ ''
       fail=0
       check() {
@@ -17,36 +26,60 @@ let
         fi
       }
 
-      check "sshd active" systemctl is-active --quiet sshd
-
-      # tailscale: daemon up and logged in (status exits non-zero if stopped/logged out)
-      check "tailscaled active" systemctl is-active --quiet tailscaled
-      check "tailscale connected" tailscale status
-
-      # QNAP (restic rest server) reachable over tailscale
-      check "qnap reachable" curl -s --max-time 5 -o /dev/null http://${dadQnap}:8000/
-
-      # zfs: "zpool status -x" exits 0 even when unhealthy, so grep its output
-      # shellcheck disable=SC2329  # called indirectly via check()
-      zfs_healthy() { [ "$(zpool status -x)" = "all pools are healthy" ]; }
-      check "zfs pools healthy" zfs_healthy
-
-      # immich: service active and API answering locally
-      check "immich-server active" systemctl is-active --quiet immich-server
-      check "immich api ping" curl -sf --max-time 5 http://127.0.0.1:2283/api/server/ping
+      ${lib.concatStrings checkFns}
 
       exit $fail
     '';
   };
 in
 {
-  environment.systemPackages = [ healthcheck ];
-
-  systemd.services.nas-healthcheck = {
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = lib.getExe healthcheck;
-    };
+  options.nas.healthchecks = lib.mkOption {
+    default = { };
+    description = ''
+      Health checks run by nas-healthchecks. Each module declares its own, so
+      un-importing a module removes its checks too. Name = label shown in output.
+    '';
+    example = lib.literalExpression ''
+      { "foo api" = { path = [ pkgs.curl ]; script = "curl -sf http://127.0.0.1:1234/"; }; }
+    '';
+    type = lib.types.attrsOf (lib.types.submodule {
+      options = {
+        script = lib.mkOption {
+          type = lib.types.lines;
+          description = "Bash snippet. Exit status 0 = healthy.";
+        };
+        path = lib.mkOption {
+          type = lib.types.listOf lib.types.package;
+          default = [ ];
+          description = "Packages the script needs on PATH.";
+        };
+      };
+    });
   };
 
+  config = {
+    # checks that aren't owned by any other module
+    nas.healthchecks = {
+      "sshd active" = { path = [ pkgs.systemd ]; script = "systemctl is-active --quiet sshd"; };
+
+      # tailscale: daemon up and logged in (status exits non-zero if stopped/logged out)
+      "tailscaled active" = { path = [ pkgs.systemd ]; script = "systemctl is-active --quiet tailscaled"; };
+      "tailscale connected" = { path = [ pkgs.tailscale ]; script = "tailscale status"; };
+
+      # zfs: "zpool status -x" exits 0 even when unhealthy, so grep its output
+      "zfs pools healthy" = {
+        path = [ pkgs.zfs ];
+        script = ''[ "$(zpool status -x)" = "all pools are healthy" ]'';
+      };
+    };
+
+    environment.systemPackages = [ healthcheck ];
+
+    systemd.services.nas-healthcheck = {
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = lib.getExe healthcheck;
+      };
+    };
+  };
 }

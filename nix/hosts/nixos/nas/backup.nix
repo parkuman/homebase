@@ -8,6 +8,12 @@ in
   age.secrets.restic-qnap-rest-container.file = ./secrets/restic-qnap-rest-container.age;
   age.secrets.healthchecks-nas-to-qnap-url.file = ./secrets/healthchecks-nas-to-qnap-url.age;
 
+  # QNAP (restic rest server) reachable over tailscale
+  nas.healthchecks."qnap reachable" = {
+    path = [ pkgs.curl ];
+    script = "curl -s --max-time 5 -o /dev/null http://${dadQnap}:8000/";
+  };
+
   services.restic.backups.dad = {
     initialize = true;
     repository = "rest:http://${dadQnap}:8000/nas/";

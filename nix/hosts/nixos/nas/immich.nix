@@ -30,4 +30,15 @@
   # if it isn't mounted. Both services get it since they both use the dataset.
   systemd.services.immich-server.unitConfig.RequiresMountsFor = "/tank/photos";
   systemd.services.immich-machine-learning.unitConfig.RequiresMountsFor = "/tank/photos";
+
+  nas.healthchecks = {
+    "immich-server active" = { 
+      path = [ pkgs.systemd ]; 
+      script = "systemctl is-active --quiet immich-server"; 
+    };
+    "immich api ping" = { 
+      path = [ pkgs.curl ]; 
+      script = "curl -sf --max-time 5 http://127.0.0.1:2283/api/server/ping"; 
+    };
+  };
 }
