@@ -5,6 +5,7 @@ let
 
   # each check becomes a bash function (exit status = result), run via check()
   checkFns = lib.imap0 (i: c: ''
+    # shellcheck disable=SC2329  # invoked indirectly via check()
     check_${toString i}() {
       ${c.value.script}
     }
