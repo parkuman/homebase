@@ -27,6 +27,8 @@
       url = "github:yaxitech/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # TEMP: nixpkgs PR #593266 (immich-public-proxy 4.2.0) for testing; remove once merged
+    nixpkgs-ipp.url = "github:r-ryantm/nixpkgs/4c8674ef854039e4d6cdc80fbe11db2b1b0f7914";
     # `stable` branch tracks the latest release
     pi = {
       url = "github:earendil-works/pi/stable";
@@ -42,6 +44,7 @@
       nix-darwin,
       ragenix,
       pi,
+      nixpkgs-ipp,
       ...
     }:
     let
@@ -73,6 +76,19 @@
             ./hosts/nixos/nas/disko.nix
             disko.nixosModules.disko
             ragenix.nixosModules.default
+            # TEMP: use immich-public-proxy from nixpkgs PR #593266. Listed last so this
+            # overlay wins over the local one in modules/services/immich-public-proxy.
+            (
+              { ... }:
+              {
+                nixpkgs.overlays = [
+                  (_final: prev: {
+                    immich-public-proxy =
+                      nixpkgs-ipp.legacyPackages.${prev.stdenv.hostPlatform.system}.immich-public-proxy;
+                  })
+                ];
+              }
+            )
           ];
         };
         parker-desktop = nixpkgs.lib.nixosSystem {

@@ -10,8 +10,10 @@
     settings.ipp = {
       showHomePage = false;
       upload = {
-        # Cloudflare (free plan) rejects request bodies over 100 MB, tunnel included.
-        maxFileSize = 100;
+        # TEMP (testing 4.2.0 chunked uploads): files are sent in chunks, so the per-request
+        # Cloudflare limit (100 MB on free plan, tunnel included) only applies to chunkSize.
+        maxFileSize = 2048;
+        chunkSize = 50;
         # TODO: upload notifications
         # notifyUrl = "https://ntfy.sh/your-random-topic?tpl=yes&t={{.title}}&m={{.message}}";
       };
