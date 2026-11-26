@@ -1,6 +1,6 @@
 { pkgs, ... }:
 let
-  nasLanIP = "192.168.40.59";
+  nasLanIP = "192.168.40.61";
   nasTailnetIP = "100.89.0.44";
 in
 {

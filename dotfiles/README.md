@@ -47,7 +47,7 @@ From another PC:
 
 ```bash
 nix shell nixpkgs#nixos-rebuild
-nixos-rebuild switch --flake ~/homebase/nix#parker-nas --target-host root@192.168.40.59 --build-host root@192.168.40.59
+nixos-rebuild switch --flake ~/homebase/nix#parker-nas --target-host root@192.168.40.61 --build-host root@192.168.40.61
 ```
 
 ### MacOS
