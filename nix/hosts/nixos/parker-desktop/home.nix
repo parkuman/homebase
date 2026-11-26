@@ -18,6 +18,7 @@ in
 {
   imports = [
     ../../../modules/apps/claude-code
+    ../../../modules/apps/fluxer
     ../../../modules/apps/gale
     ../../../modules/apps/gpg
     ../../../modules/apps/gpu-screen-recorder
