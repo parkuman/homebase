@@ -14,6 +14,11 @@ in
     script = "curl -s --max-time 5 -o /dev/null http://${dadQnap}:8000/";
   };
 
+  # the backup stops immich, which would fail the immich checks -> skip health
+  # checks while it runs (no ping is sent; healthchecks.io grace period covers it)
+  systemd.services.nas-healthcheck.serviceConfig.ExecCondition =
+    "${pkgs.writeShellScript "not-backing-up" "! ${pkgs.systemd}/bin/systemctl is-active --quiet restic-backups-dad"}";
+
   services.restic.backups.dad = {
     initialize = true;
     repository = "rest:http://${dadQnap}:8000/nas/";

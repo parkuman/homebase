@@ -31,6 +31,23 @@ let
       exit $fail
     '';
   };
+
+  # runs the checks and reports to healthchecks.io: <url>/<exit code> (0 = up,
+  # non-zero = down), with the OK/FAIL output as the ping body so it shows in
+  # the healthchecks.io event log. If pings stop arriving (NAS down), the
+  # healthchecks.io grace period expires and it alerts too.
+  pinger = pkgs.writeShellApplication {
+    name = "nas-healthchecks-ping";
+    runtimeInputs = [ pkgs.curl ];
+    text = /* bash */ ''
+      rc=0
+      out=$(${lib.getExe healthcheck} 2>&1) || rc=$?
+      echo "$out"
+      curl -fsS -m 10 --retry 3 -o /dev/null --data-raw "$out" \
+        "$(cat ${config.age.secrets.healthchecks-nas-health-url.path})/$rc"
+      exit "$rc"
+    '';
+  };
 in
 {
   options.nas.healthchecks = lib.mkOption {
@@ -75,11 +92,22 @@ in
 
     environment.systemPackages = [ healthcheck ];
 
+    age.secrets.healthchecks-nas-health-url.file = ./secrets/healthchecks-nas-health-url.age;
+
     systemd.services.nas-healthcheck = {
+      after = [ "network-online.target" "tailscaled.service" ];
+      wants = [ "network-online.target" ];
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = lib.getExe healthcheck;
+        ExecStart = lib.getExe pinger;
       };
+    };
+
+    systemd.timers.nas-healthcheck = {
+      wantedBy = [ "timers.target" ];
+      # OnCalendar rather than OnUnitActiveSec: the latter stops rescheduling if
+      # a run is skipped via ExecCondition (see backup.nix)
+      timerConfig.OnCalendar = "*:0/5"; # every 5 min
     };
   };
 }

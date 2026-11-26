@@ -6,6 +6,7 @@ in {
   "restic-password.age".publicKeys = recipients;
   "restic-qnap-rest-container.age".publicKeys = recipients;
   "healthchecks-nas-to-qnap-url.age".publicKeys = recipients;
+  "healthchecks-nas-health-url.age".publicKeys = recipients;
   "cloudflare-dns-token.age".publicKeys = recipients;
   "cloudflared-tunnel-immich.age".publicKeys = recipients;
 }
